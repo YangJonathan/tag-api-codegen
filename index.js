@@ -312,6 +312,9 @@ function getEnumEntries(schemas, schema) {
 	const enumItemsObject = {
 		ITEMS: []
 	};
+	if (_.isUndefined(schema)) {
+		return undefined;
+	}
 	if (schema.enum && schema.type !== "number") {
 		enumItemsObject.ITEMS = _.map(schema.enum, (value) => {
 			return `"${value}"`;
@@ -508,8 +511,12 @@ function translateDataType(schema, isForeignReference = false) {
  */
 function translateFieldType(schemas, schema) {
 	let fieldType;
-
-	if (!schema.type && schema.$ref) {
+	if (_.isUndefined(schema)) {
+		fieldType = "UNDEFINED";
+		return fieldType
+	}
+	console.log("schema", schema);
+	if (!schema?.type && schema?.$ref) {
 		const externalSchema = schemas[getSchemaName(schema.$ref)];
 		fieldType = translateFieldType(schemas, externalSchema);
 	} else if (schema.enum) {
